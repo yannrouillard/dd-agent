@@ -61,6 +61,8 @@ PID_DIR = None
 DOGSTATSD_FLUSH_INTERVAL = 10
 DOGSTATSD_AGGREGATOR_BUCKET_SIZE = 10
 
+#buffer size in K
+BUFFER_SIZE_OPTIONS = [8, 16, 32, 64]
 
 WATCHDOG_TIMEOUT = 120
 UDP_SOCKET_TIMEOUT = 5
@@ -340,7 +342,8 @@ class Server(object):
         self.sockaddr = get_socket_address(host, int(port))
         self.socket = None
         self.metrics_aggregator = metrics_aggregator
-        self.buffer_size = 1024 * 8
+#       self.buffer_size = 1024 * 8
+        self.buffer_size = buffer_size
 
         self.running = False
 
@@ -388,6 +391,8 @@ class Server(object):
         timeout = UDP_SOCKET_TIMEOUT
         should_forward = self.should_forward
         forward_udp_sock = self.forward_udp_sock
+#
+        log.debug("Buffer size set to %sK." % (buffer_size))
 
         # Run our select loop.
         self.running = True
@@ -484,6 +489,13 @@ def init(config_path=None, use_watchdog=False, use_forwarder=False, args=None):
     event_chunk_size = c.get('event_chunk_size')
     recent_point_threshold = c.get('recent_point_threshold', None)
     server_host = c['bind_host']
+#
+    buffer_size = int(c.get('buffer_size', 8))
+    if buffer_size in BUFFER_SIZE_OPTIONS:
+        buffer_size = buffer_size * 1024
+    else:
+        buffer_size = 8 * 1024
+        log.debug("Specified buffer size is invalid. Defaulting to 8K")
 
     target = c['dd_url']
     if use_forwarder:
@@ -516,8 +528,8 @@ def init(config_path=None, use_watchdog=False, use_forwarder=False, args=None):
     # use the '::' meta address as `bind_host`.
     if non_local_traffic:
         server_host = '0.0.0.0'
-
-    server = Server(aggregator, server_host, port, forward_to_host=forward_to_host, forward_to_port=forward_to_port)
+#
+    server = Server(aggregator, server_host, port, buffer_size forward_to_host=forward_to_host, forward_to_port=forward_to_port)
 
     return reporter, server, c
 
