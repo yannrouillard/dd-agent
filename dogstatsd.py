@@ -338,7 +338,7 @@ class Server(object):
     """
     A statsd udp server.
     """
-    def __init__(self, metrics_aggregator, host, port, forward_to_host=None, forward_to_port=None):
+    def __init__(self, metrics_aggregator, host, port, buffer_size, forward_to_host=None, forward_to_port=None):
         self.sockaddr = get_socket_address(host, int(port))
         self.socket = None
         self.metrics_aggregator = metrics_aggregator
@@ -529,7 +529,7 @@ def init(config_path=None, use_watchdog=False, use_forwarder=False, args=None):
     if non_local_traffic:
         server_host = '0.0.0.0'
 #
-    server = Server(aggregator, server_host, port, buffer_size forward_to_host=forward_to_host, forward_to_port=forward_to_port)
+    server = Server(aggregator, server_host, port, buffer_size, forward_to_host=forward_to_host, forward_to_port=forward_to_port)
 
     return reporter, server, c
 
