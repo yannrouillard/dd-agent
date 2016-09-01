@@ -342,7 +342,6 @@ class Server(object):
         self.sockaddr = get_socket_address(host, int(port))
         self.socket = None
         self.metrics_aggregator = metrics_aggregator
-#       self.buffer_size = 1024 * 8
         self.buffer_size = buffer_size
 
         self.running = False
