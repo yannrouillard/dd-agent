@@ -64,6 +64,7 @@ DOGSTATSD_AGGREGATOR_BUCKET_SIZE = 10
 # buffer size in K
 BUFFER_SIZE_OPTIONS = [8, 16, 32, 64]
 DEFAULT_BUFFER_SIZE = 8
+DEFAULT_BUFFER_SIZE_BYTES = DEFAULT_BUFFER_SIZE * 1024
 
 WATCHDOG_TIMEOUT = 120
 UDP_SOCKET_TIMEOUT = 5
@@ -340,7 +341,7 @@ class Server(object):
     A statsd udp server.
     """
     def __init__(self, metrics_aggregator, host, port, forward_to_host=None, forward_to_port=None,
-                 buffer_size=DEFAULT_BUFFER_SIZE):
+                 buffer_size=DEFAULT_BUFFER_SIZE_BYTES):
         self.sockaddr = get_socket_address(host, int(port))
         self.socket = None
         self.metrics_aggregator = metrics_aggregator
@@ -393,7 +394,7 @@ class Server(object):
         should_forward = self.should_forward
         forward_udp_sock = self.forward_udp_sock
 
-        log.debug("Buffer size set to %s." % (buffer_size))
+        log.debug("Buffer size set to %s bytes." % (buffer_size))
 
         # Run our select loop.
         self.running = True
@@ -495,7 +496,7 @@ def init(config_path=None, use_watchdog=False, use_forwarder=False, args=None):
     if buffer_size in BUFFER_SIZE_OPTIONS:
         buffer_size = buffer_size * 1024
     else:
-        buffer_size = DEFAULT_BUFFER_SIZE * 1024
+        buffer_size = DEFAULT_BUFFER_SIZE_BYTES
         log.warning("Specified buffer size is invalid. Defaulting to %s K." % (DEFAULT_BUFFER_SIZE))
 
     target = c['dd_url']
