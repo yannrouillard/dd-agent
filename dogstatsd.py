@@ -339,7 +339,8 @@ class Server(object):
     """
     A statsd udp server.
     """
-    def __init__(self, metrics_aggregator, host, port, forward_to_host=None, forward_to_port=None, buffer_size=DEFAULT_BUFFER_SIZE):
+    def __init__(self, metrics_aggregator, host, port, forward_to_host=None, forward_to_port=None,
+                 buffer_size=DEFAULT_BUFFER_SIZE):
         self.sockaddr = get_socket_address(host, int(port))
         self.socket = None
         self.metrics_aggregator = metrics_aggregator
@@ -495,7 +496,7 @@ def init(config_path=None, use_watchdog=False, use_forwarder=False, args=None):
         buffer_size = buffer_size * 1024
     else:
         buffer_size = DEFAULT_BUFFER_SIZE * 1024
-        log.warning("Specified buffer size is invalid. Defaulting to %s." % (buffer_size))
+        log.warning("Specified buffer size is invalid. Defaulting to %s K." % (DEFAULT_BUFFER_SIZE))
 
     target = c['dd_url']
     if use_forwarder:
@@ -529,7 +530,8 @@ def init(config_path=None, use_watchdog=False, use_forwarder=False, args=None):
     if non_local_traffic:
         server_host = '0.0.0.0'
 
-    server = Server(aggregator, server_host, port,  buffer_size=buffer_size, forward_to_host=forward_to_host, forward_to_port=forward_to_port)
+    server = Server(aggregator, server_host, port, forward_to_host=forward_to_host, forward_to_port=forward_to_port,
+                    buffer_size=buffer_size)
 
     return reporter, server, c
 
