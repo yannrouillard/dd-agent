@@ -153,8 +153,8 @@ gce_updated_hostname: yes
 #  Make sure your client is sending to the same port.
 # dogstatsd_port: 8125
 
-# buffer size options in Ks -> Default is 8. Choose from 16, 32 or 64. 
-# buffer_size: 8
+# DogStatsD maximum packet size, options in Kilobytes -> Default is 8. Choose from 16, 32 or 64. 
+# dogstatsd_max_packet_size: 8
 
 # By default dogstatsd will post aggregate metrics to the Agent (which handles
 # errors/timeouts/retries/etc). To send directly to the datadog api, set this
