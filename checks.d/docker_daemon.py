@@ -646,6 +646,7 @@ class DockerDaemon(AgentCheck):
             status = defaultdict(int)
             status_change = []
             container_tags = set()
+            error_alert_type = ['die', 'oom']
             for event in event_group:
                 max_timestamp = max(max_timestamp, int(event['time']))
                 status[event['status']] += 1
@@ -672,6 +673,12 @@ class DockerDaemon(AgentCheck):
                 status_changes="\n".join(
                     ["%s \t%s" % (change[1].upper(), change[0]) for change in status_change])
             )
+
+            if any(e in status_text for e in error_alert_type):
+                alert_type = "error"
+            else:
+                alert_type = None
+
             events.append({
                 'timestamp': max_timestamp,
                 'host': self.hostname,
@@ -680,7 +687,8 @@ class DockerDaemon(AgentCheck):
                 'msg_text': msg_body,
                 'source_type_name': EVENT_TYPE,
                 'event_object': 'docker:%s' % image_name,
-                'tags': list(container_tags)
+                'tags': list(container_tags),
+                'alert_type': alert_type
             })
 
         return events
